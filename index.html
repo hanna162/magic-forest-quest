@@ -6,10 +6,9 @@
     <title>Magic Forest Quest - Primary English</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* UNIVERSAL FONT STACK - IFRAME SAFE */
+        /* UNIVERSAL FONT STACK */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
         }
         
         /* MAGIC FOREST ANIMATIONS */
@@ -34,7 +33,7 @@
             box-shadow: 0 0 10px #FBBF24;
         }
         
-        /* SOLID COLORS FOR IFRAME VISIBILITY (No Transparency) */
+        /* SOLID COLORS FOR IFRAME VISIBILITY */
         .glass-panel {
             background-color: #064E3B; /* Solid Dark Green */
             border: 2px solid #34D399;
@@ -59,14 +58,15 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-hidden relative">
+<!-- FIX: Changed overflow-hidden to overflow-y-auto to allow scrolling -->
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-y-auto relative">
 
     <!-- DYNAMIC BACKGROUND -->
-    <div class="absolute inset-0 bg-gradient-to-b from-green-900 to-black z-0"></div>
-    <div id="firefly-container" class="absolute inset-0 z-0 overflow-hidden"></div>
+    <div class="fixed inset-0 bg-gradient-to-b from-green-900 to-black z-0"></div>
+    <div id="firefly-container" class="fixed inset-0 z-0 overflow-hidden"></div>
 
     <!-- MAIN APP CONTAINER -->
-    <div id="app" class="relative z-10 w-full max-w-2xl p-4">
+    <div id="app" class="relative z-10 w-full max-w-2xl p-4 my-8">
         
         <!-- SCREEN 1: START MENU -->
         <div id="start-screen" class="glass-panel p-8 text-center animate-float">
@@ -167,7 +167,7 @@
 
     <!-- JAVASCRIPT ENGINE -->
     <script>
-        // --- 1. DATASET (60 Questions: Magic Forest Theme - Determiners) ---
+        // --- 1. DATASET ---
         const quizData = [
             {q: "_____ is my balloon here in my hand.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' because the balloon is near (in my hand) and it is only ONE (singular)."},
             {q: "Look at _____ stars up in the sky!", a: ["this", "these", "that", "those"], c: "those", e: "Use 'those' because the stars are far away (in the sky) and there are MANY (plural)."},
