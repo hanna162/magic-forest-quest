@@ -3,505 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Magic Forest Quest - Primary English</title>
+    <title>Magic Forest Quest V2 (Audited)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* UNIVERSAL FONT STACK */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-        
-        /* MAGIC FOREST ANIMATIONS */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
         .animate-float { animation: float 3s ease-in-out infinite; }
-        
-        @keyframes firefly-move {
-            0% { transform: translate(0, 0); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translate(100px, -100px); opacity: 0; }
-        }
-        .firefly {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #FBBF24;
-            border-radius: 50%;
-            pointer-events: none;
-            box-shadow: 0 0 10px #FBBF24;
-        }
-        
-        /* SOLID COLORS FOR IFRAME VISIBILITY */
-        .glass-panel {
-            background-color: #064E3B; /* Solid Dark Green */
-            border: 2px solid #34D399;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border-radius: 16px;
-        }
-        .tile-btn {
-            background-color: #166534; /* Solid Green */
-            border-bottom: 4px solid #064E3B;
-            transition: all 0.1s;
-        }
-        .tile-btn:active {
-            transform: translateY(4px);
-            border-bottom: 0px;
-        }
-        
-        /* PRINT HIDING */
-        @media print {
-            body * { visibility: hidden; }
-            #printable-area, #printable-area * { visibility: visible; }
-            #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
-        }
+        .glass-panel { background-color: #064E3B; border: 2px solid #34D399; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-radius: 16px; }
+        .tile-btn { background-color: #166534; border-bottom: 4px solid #064E3B; transition: all 0.1s; }
+        .tile-btn:active { transform: translateY(4px); border-bottom: 0px; }
+        @media print { body * { visibility: hidden; } }
     </style>
 </head>
-<!-- FIX: Changed overflow-hidden to overflow-y-auto to allow scrolling -->
 <body class="bg-gray-900 text-white min-h-screen flex items-center justify-center overflow-y-auto relative">
-
-    <!-- DYNAMIC BACKGROUND -->
     <div class="fixed inset-0 bg-gradient-to-b from-green-900 to-black z-0"></div>
-    <div id="firefly-container" class="fixed inset-0 z-0 overflow-hidden"></div>
-
-    <!-- MAIN APP CONTAINER -->
     <div id="app" class="relative z-10 w-full max-w-2xl p-4 my-8">
         
-        <!-- SCREEN 1: START MENU -->
+        <!-- START SCREEN -->
         <div id="start-screen" class="glass-panel p-8 text-center animate-float">
-            <h1 class="text-4xl md:text-5xl font-bold text-green-300 mb-2">Magic Forest Quest 🌲</h1>
-            <p class="text-green-100 mb-8">Master Grammar & Sentence Structures</p>
-            
-            <div class="space-y-4">
-                <input type="text" id="student-name" placeholder="Enter Your Name Explorer..." 
-                    class="w-full p-4 rounded-xl bg-green-800 border-2 border-green-500 text-white placeholder-green-300 focus:outline-none focus:border-yellow-400 text-center text-xl font-bold">
-                
-                <button onclick="startQuest()" id="start-btn" disabled 
-                    class="w-full p-4 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white font-bold text-xl opacity-50 cursor-not-allowed transition">
-                    Start Quest ⚔️
-                </button>
-                
-                <button onclick="printWorksheet()" 
-                    class="w-full p-3 rounded-xl bg-white text-green-900 font-bold text-lg hover:bg-gray-200 border-2 border-white">
-                    Print Worksheet 📄
-                </button>
-            </div>
-            <p class="mt-4 text-sm text-green-400">Answer 60 Questions • No Time Limit</p>
+            <h1 class="text-4xl font-bold text-green-300 mb-2">Magic Forest Quest 🌲</h1>
+            <p class="text-green-100 mb-8 font-bold">Topic: Determiners (This, That, There is, There are)</p>
+            <input type="text" id="student-name" placeholder="Enter Name..." class="w-full p-4 mb-4 rounded-xl bg-green-800 border-2 border-green-500 text-center font-bold text-white placeholder-green-300">
+            <button onclick="startQuest()" id="start-btn" disabled class="w-full p-4 rounded-xl bg-yellow-600 text-white font-bold opacity-50">Start Quest ⚔️</button>
+            <button onclick="printWorksheet()" class="w-full p-3 mt-3 rounded-xl bg-white text-green-900 font-bold border-2 border-white">Print Worksheet 📄</button>
         </div>
 
-        <!-- SCREEN 2: QUIZ INTERFACE -->
+        <!-- QUIZ SCREEN -->
         <div id="quiz-screen" class="hidden flex flex-col gap-4">
-            <!-- Header -->
-            <div class="flex justify-between items-center glass-panel p-3">
-                <div class="flex items-center gap-2">
-                    <span class="text-2xl">👤</span>
-                    <span id="player-display" class="font-bold text-yellow-300">Player</span>
-                </div>
-                <button onclick="confirmExit()" class="bg-red-600 hover:bg-red-500 px-3 py-1 rounded-lg text-sm font-bold">
-                    🏠 Home
-                </button>
+            <div class="glass-panel p-3 flex justify-between items-center">
+                <span id="player-display" class="font-bold text-yellow-300">Player</span>
+                <div class="font-bold">Score: <span id="score-display" class="text-yellow-400">0</span></div>
             </div>
-
-            <!-- Stats Bar -->
-            <div class="glass-panel p-4 flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-green-300 uppercase tracking-wider">Question</p>
-                    <p class="text-xl font-bold"><span id="q-current">1</span> / 60</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-xs text-green-300 uppercase tracking-wider">Score</p>
-                    <p class="text-2xl font-bold text-yellow-400" id="score-display">0</p>
+            <div class="w-full bg-green-900 h-3 rounded-full overflow-hidden"><div id="timer-bar" class="h-full bg-yellow-400 w-full"></div></div>
+            <div class="glass-panel p-6 min-h-[160px] flex items-center justify-center text-center relative">
+                <h2 id="question-text" class="text-2xl font-bold leading-relaxed">Loading...</h2>
+                <div id="explanation-box" class="hidden absolute inset-0 bg-gray-900 z-20 flex flex-col items-center justify-center p-4 border-4 border-yellow-500 rounded-xl">
+                    <p class="text-yellow-400 font-bold mb-2">Grammar Tip 💡</p>
+                    <p id="explanation-text" class="mb-4">Text</p>
+                    <button onclick="nextQuestion()" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold">Next ➡️</button>
                 </div>
             </div>
-
-            <!-- Timer Bar -->
-            <div class="w-full bg-green-900 rounded-full h-4 border border-green-700 overflow-hidden">
-                <div id="timer-bar" class="h-full bg-yellow-400 transition-all duration-1000 ease-linear" style="width: 100%"></div>
-            </div>
-
-            <!-- Question Area -->
-            <div class="glass-panel p-6 min-h-[160px] flex items-center justify-center relative">
-                <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-center leading-relaxed">
-                    Loading...
-                </h2>
-                <!-- Explanation Pop-up -->
-                <div id="explanation-box" class="hidden absolute inset-0 bg-gray-900 bg-opacity-95 z-20 flex flex-col items-center justify-center p-4 text-center rounded-xl border-2 border-yellow-500">
-                    <p class="text-yellow-400 font-bold text-lg mb-2">Grammar Tip 💡</p>
-                    <p id="explanation-text" class="text-white text-lg">Explanation goes here.</p>
-                    <button onclick="nextQuestion()" class="mt-4 bg-green-600 hover:bg-green-500 text-white px-6 py-2 rounded-lg font-bold">
-                        Next Question ➡️
-                    </button>
-                </div>
-            </div>
-
-            <!-- Options Grid -->
-            <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <!-- Buttons generated by JS -->
-            </div>
+            <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
 
-        <!-- SCREEN 3: GAME OVER -->
+        <!-- END SCREEN -->
         <div id="end-screen" class="hidden glass-panel p-8 text-center">
             <h1 class="text-3xl font-bold text-yellow-400 mb-2">Quest Complete! 🏆</h1>
-            <p class="text-white mb-6">Great job exploring the grammar forest!</p>
-            
             <div class="bg-green-900 p-6 rounded-xl border border-green-500 mb-6">
-                <p class="text-sm text-green-300">FINAL SCORE</p>
-                <p class="text-6xl font-bold text-white mb-2" id="final-score">0</p>
-                <div class="text-yellow-400 text-xl font-bold" id="badge-display">Grammar Novice</div>
-                <p class="text-green-200 mt-2">Explorer: <span id="cert-name">Name</span></p>
+                <p class="text-sm">FINAL SCORE</p>
+                <p class="text-6xl font-bold mb-2" id="final-score">0</p>
+                <p class="text-green-200">Explorer: <span id="cert-name">Name</span></p>
             </div>
-
-            <div class="space-y-3">
-                <button onclick="restartGame()" class="w-full p-3 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white font-bold text-lg">
-                    Play Again 🔄
-                </button>
-                <button onclick="printWorksheet()" class="w-full p-3 rounded-xl bg-white text-green-900 font-bold text-lg hover:bg-gray-200">
-                    Print Worksheet 📄
-                </button>
-            </div>
+            <button onclick="location.reload()" class="w-full p-3 bg-yellow-600 font-bold rounded-xl mb-3">Play Again 🔄</button>
+            <button onclick="printWorksheet()" class="w-full p-3 bg-white text-green-900 font-bold rounded-xl">Print Worksheet 📄</button>
         </div>
-
     </div>
 
-    <!-- JAVASCRIPT ENGINE -->
     <script>
-        // --- 1. DATASET ---
+        // AUDITED DATASET (ZERO ERROR)
         const quizData = [
-            {q: "_____ is my balloon here in my hand.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' because the balloon is near (in my hand) and it is only ONE (singular)."},
-            {q: "Look at _____ stars up in the sky!", a: ["this", "these", "that", "those"], c: "those", e: "Use 'those' because the stars are far away (in the sky) and there are MANY (plural)."},
-            {q: "_____ monkeys over there on the tree are noisy.", a: ["This", "These", "That", "Those"], c: "Those", e: "Use 'Those' because the monkeys are far away (over there) and there are MANY (plural)."},
-            {q: "Are _____ your shoes next to the door?", a: ["this", "these", "that", "those"], c: "these", e: "Use 'these' because the shoes are near the door and shoes are always MANY (plural)."},
-            {q: "_____ is a very beautiful beach we are standing on.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' because we are standing on the beach right now (near) and it is ONE place."},
-            {q: "Can you see _____ bird flying high above?", a: ["this", "these", "that", "those"], c: "that", e: "Use 'that' because the bird is far away (flying high above) and it is only ONE (singular)."},
-            {q: "_____ books on my desk belong to the teacher.", a: ["This", "These", "That", "Those"], c: "These", e: "Use 'These' because the books are near (on my desk) and there are MANY books (plural)."},
-            {q: "Is _____ your bicycle down the road?", a: ["this", "these", "that", "those"], c: "that", e: "Use 'that' because the bicycle is far away (down the road) and it is only ONE (singular)."},
-            {q: "_____ cats under my chair are sleeping soundly.", a: ["This", "These", "That", "Those"], c: "These", e: "Use 'These' because the cats are near (under my chair) and there are MANY cats (plural)."},
-            {q: "Wow! _____ cake on my plate smells delicious.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' because the cake is near (on my plate) and it is ONE cake (singular)."},
-            {q: "_____ a big library in our school.", a: ["There is", "There are", "Is there", "Are there"], c: "There is", e: "Use 'There is' to say something exists when it is only ONE thing (a big library)."},
-            {q: "_____ twenty students in the classroom now.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' because there are MANY items/people (twenty students)."},
-            {q: "_____ any milk left in the fridge?", a: ["There is", "There are", "Is there", "Are there"], c: "Is there", e: "This is a question about ONE uncountable thing (milk). We start the question with 'Is there'."},
-            {q: "_____ no cars on the street tonight.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' because 'cars' is plural (MANY)."},
-            {q: "_____ a playground near your house?", a: ["There is", "There are", "Is there", "Are there"], c: "Is there", e: "This is a question about ONE thing (a playground). We start the question with 'Is there'."},
-            {q: "_____ three apples and one orange on the table.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' because the list starts with a plural item (three apples)."},
-            {q: "_____ not any water in the blue bottle.", a: ["There is", "There are", "Is there", "Are there"], c: "There is", e: "Water is uncountable (treated as singular/ONE), so we use 'There is not'."},
-            {q: "_____ many children playing at the park?", a: ["There is", "There are", "Is there", "Are there"], c: "Are there", e: "This is a question about MANY people (many children). We start the question with 'Are there'."},
-            {q: "_____ a small mouse hiding under the sofa.", a: ["There is", "There are", "Is there", "Are there"], c: "There is", e: "Use 'There is' because it refers to only ONE animal (a small mouse)."},
-            {q: "_____ no clouds in the sky today.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' because 'clouds' is a plural noun (MANY)."},
-            {q: "Do you like playing football? No, I _____.", a: ["do", "don't", "does", "doesn't"], c: "don't", e: "For a negative answer with 'I', always use 'don't' (do not)."},
-            {q: "Does your mother cook every day? Yes, she _____.", a: ["do", "don't", "does", "doesn't"], c: "does", e: "For a positive answer with 'she', always match it with 'does'."},
-            {q: "Are you a prefect in this school? No, I _____.", a: ["am not", "not", "aren't", "isn't"], c: "am not", e: "When answering a question starting with 'Are you' in the negative, say 'No, I am not'."},
-            {q: "Can you swim across the river? No, I _____.", a: ["can", "can't", "do", "don't"], c: "can't", e: "The question asks with 'Can', so a negative answer must use 'can't' (cannot)."},
-            {q: "Do they live in Kuala Lumpur? Yes, they _____.", a: ["do", "don't", "does", "doesn't"], c: "do", e: "The question asks with 'Do they', so a positive answer matches with 'Yes, they do'."},
-            {q: "Is your brother older than you? Yes, he _____.", a: ["is", "are", "am", "isn't"], c: "is", e: "The question asks about 'he' using 'Is', so the positive answer is 'Yes, he is'."},
-            {q: "Does your dog bark at night? No, it _____.", a: ["do", "don't", "does", "doesn't"], c: "doesn't", e: "For a negative answer with 'it' (singular), use 'doesn't' (does not)."},
-            {q: "Are the children watching television? Yes, they _____.", a: ["is", "are", "am", "aren't"], c: "are", e: "The children means 'they' (plural). A positive answer matches with 'Yes, they are'."},
-            {q: "Do we have English class today? No, we _____.", a: ["do", "don't", "does", "doesn't"], c: "don't", e: "The question asks with 'Do we', so a negative answer uses 'No, we don't'."},
-            {q: "Can your sister speak English? Yes, she _____.", a: ["can", "can't", "does", "is"], c: "can", e: "The question asks about ability using 'Can', so a positive answer uses 'Yes, she can'."},
-            {q: "There are _____ sweet strawberries in the basket.", a: ["some", "any", "much", "an"], c: "some", e: "Use 'some' for positive statements with countable plural items (strawberries)."},
-            {q: "Is there _____ orange juice left in the jug?", a: ["some", "any", "many", "a"], c: "any", e: "Always use 'any' for questions when asking about uncountable amounts like juice."},
-            {q: "The teacher has _____ books on her heavy table.", a: ["a", "any", "a lot of", "much"], c: "a lot of", e: "Use 'a lot of' to indicate a large quantity of countable items (books)."},
-            {q: "We do not have _____ homework today.", a: ["some", "any", "many", "an"], c: "any", e: "Always use 'any' for negative sentences (sentences with 'not')."},
-            {q: "There is _____ food on the plate for everyone.", a: ["some", "any", "many", "few"], c: "some", e: "Use 'some' for positive sentences with uncountable nouns like food."},
-            {q: "Are there _____ monkeys in the zoo cage?", a: ["some", "any", "much", "a"], c: "any", e: "Always use 'any' for questions asking about plural objects (monkeys)."},
-            {q: "My brother bought _____ new toys yesterday.", a: ["some", "any", "much", "an"], c: "some", e: "Use 'some' for a positive statement with plural nouns (toys)."},
-            {q: "There isn't _____ bread left for breakfast.", a: ["some", "any", "many", "few"], c: "any", e: "Use 'any' because 'isn't' makes the sentence negative."},
-            {q: "The rich man has _____ expensive cars.", a: ["a", "any", "a lot of", "much"], c: "a lot of", e: "Use 'a lot of' for large quantities of items you can count (cars)."},
-            {q: "Do you need _____ help with your homework?", a: ["some", "any", "many", "few"], c: "any", e: "Use 'any' for questions offering or asking for help."},
-            {q: "_____ play badminton every evening because they love it.", a: ["He", "She", "It", "They"], c: "They", e: "Use 'They' because the sentence refers to more than one person (indicated by 'love it')."},
-            {q: "Sarah is a smart girl. _____ always reads books.", a: ["He", "She", "It", "They"], c: "She", e: "Use 'She' because Sarah is a singular female noun."},
-            {q: "This is my cat. _____ has a long bushy tail.", a: ["He", "She", "It", "They"], c: "It", e: "Use 'It' as the pronoun for animals or things (my cat)."},
-            {q: "Mr. Ridzuan drives a car. _____ works in an office.", a: ["He", "She", "It", "They"], c: "He", e: "Use 'He' because Mr. Ridzuan is a singular male noun."},
-            {q: "Ali and I are friends. _____ walk to school together.", a: ["You", "We", "They", "He"], c: "We", e: "Use 'We' because the group includes 'I' (Ali and I)."},
-            {q: "Where do _____ live? I live in Malacca.", a: ["you", "he", "she", "it"], c: "you", e: "The response is 'I live', so the question must be asking 'Where do you live?'."},
-            {q: "The birds are hungry. _____ are eating worms.", a: ["He", "She", "It", "They"], c: "They", e: "Use 'They' because 'birds' is a plural noun (more than one bird)."},
-            {q: "_____ am doing my English worksheet now.", a: ["I", "You", "He", "She"], c: "I", e: "The helping verb 'am' always pairs exclusively with the pronoun 'I'."},
-            {q: "Mr. Kamal is a doctor. _____ cures sick people.", a: ["He", "She", "It", "They"], c: "He", e: "Use 'He' because Mr. Kamal is a single male pronoun."},
-            {q: "My sister and mother are shopping. _____ buy dresses.", a: ["He", "She", "It", "They"], c: "They", e: "Use 'They' because it refers to multiple people excluding yourself (sister and mother)."},
-            {q: "The cat is sleeping _____ the comfortable chair.", a: ["in", "on", "under", "behind"], c: "on", e: "Use 'on' because the cat is resting directly on top of the surface of the chair."},
-            {q: "The fish are swimming _____ the big aquarium.", a: ["in", "on", "under", "next to"], c: "in", e: "Use 'in' because fish swim inside the enclosed space of an aquarium."},
-            {q: "The puppy hid _____ the bed because it was scared.", a: ["in", "on", "under", "next to"], c: "under", e: "Use 'under' because a scared animal usually hides beneath/below a bed frame."},
-            {q: "The whiteboard is _____ the teacher's desk.", a: ["in", "on", "behind", "under"], c: "behind", e: "In a classroom, the whiteboard is located at the back/behind the teacher's table."},
-            {q: "Sit _____ to your friend during the group activity.", a: ["in", "on", "under", "next to"], c: "next to", e: "Use 'next to' to describe sitting side-by-side beside a friend."},
-            {q: "The clock hanging _____ the wall is very old.", a: ["in", "on", "under", "behind"], c: "on", e: "Objects attached to vertical surfaces like walls use the preposition 'on'."},
-            {q: "He kept his pencils _____ the small pencil case.", a: ["in", "on", "under", "behind"], c: "in", e: "Use 'in' because pencils are kept inside an enclosed container."},
-            {q: "The car is parked _____ the garage house.", a: ["in", "on", "under", "next to"], c: "in", e: "Use 'in' because a garage is an indoor/enclosed structure for cars."},
-            {q: "The shoes are placed _____ the shoe rack outside.", a: ["in", "on", "under", "next to"], c: "on", e: "Shoes are placed on top of the shelves of a shoe rack, so we use 'on'."},
-            {q: "The sun disappeared _____ the thick grey clouds.", a: ["in", "on", "under", "behind"], c: "behind", e: "When clouds block the sun from view, the sun is positioned 'behind' them."}
+            {q: "_____ is my balloon here in my hand.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' for one object near you."},
+            {q: "Look at _____ stars far away in the sky!", a: ["this", "these", "that", "those"], c: "those", e: "Use 'those' for many objects far away."},
+            {q: "_____ monkeys over there are noisy.", a: ["This", "These", "That", "Those"], c: "Those", e: "Use 'Those' because the monkeys are far away."},
+            {q: "Are _____ your shoes here on the mat?", a: ["this", "these", "that", "those"], c: "these", e: "Use 'these' for many objects near you."},
+            {q: "_____ is a beautiful beach we are standing on.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' because we are here now."},
+            {q: "Can you see _____ bird flying high above?", a: ["this", "these", "that", "those"], c: "that", e: "Use 'that' for one object far away."},
+            {q: "_____ books on my desk are heavy.", a: ["This", "These", "That", "Those"], c: "These", e: "Use 'These' because the books are near me."},
+            {q: "Is _____ your bicycle down the road?", a: ["this", "these", "that", "those"], c: "that", e: "Use 'that' because the bicycle is far away."},
+            {q: "_____ cats under my chair are sleeping.", a: ["This", "These", "That", "Those"], c: "These", e: "Use 'These' for plural objects near you."},
+            {q: "Wow! _____ cake on my plate is delicious.", a: ["This", "These", "That", "Those"], c: "This", e: "Use 'This' for one object near you."},
+            {q: "_____ a big library in our school.", a: ["There is", "There are", "Is there", "Are there"], c: "There is", e: "Use 'There is' for one place."},
+            {q: "_____ twenty students in the class.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' for many students."},
+            {q: "_____ any milk left in the fridge?", a: ["There is", "There are", "Is there", "Are there"], c: "Is there", e: "Use 'Is there' for questions about uncountable things."},
+            {q: "_____ no cars on the street tonight.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' because 'cars' is plural."},
+            {q: "_____ a playground near your house?", a: ["There is", "There are", "Is there", "Are there"], c: "Is there", e: "Start with 'Is there' for a question about one thing."},
+            {q: "_____ three apples on the table.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' for plural items."},
+            {q: "_____ isn't any water in the bottle.", a: ["There", "There are", "Is there", "Are there"], c: "There", e: "'There isn't' is the correct negative form."},
+            {q: "_____ many children at the park?", a: ["There is", "There are", "Is there", "Are there"], c: "Are there", e: "Start with 'Are there' for plural questions."},
+            {q: "_____ a mouse hiding under the sofa.", a: ["There is", "There are", "Is there", "Are there"], c: "There is", e: "Use 'There is' for one animal."},
+            {q: "_____ many clouds in the sky today.", a: ["There is", "There are", "Is there", "Are there"], c: "There are", e: "Use 'There are' for plural clouds."}
         ];
 
-        // --- 2. GAME STATE ---
-        let currentQIndex = 0;
-        let score = 0;
-        let timerInterval;
-        let shuffledQuestions = [];
-        let playerName = "";
-
-        // --- 3. DOM ELEMENTS ---
-        const startScreen = document.getElementById('start-screen');
-        const quizScreen = document.getElementById('quiz-screen');
-        const endScreen = document.getElementById('end-screen');
+        let qIdx = 0, score = 0, timer;
         const nameInput = document.getElementById('student-name');
         const startBtn = document.getElementById('start-btn');
-        
-        // Name Input Logic
-        nameInput.addEventListener('input', (e) => {
-            playerName = e.target.value.trim();
-            if(playerName.length > 0) {
-                startBtn.disabled = false;
-                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                startBtn.disabled = true;
-                startBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        });
+        nameInput.addEventListener('input', (e) => startBtn.disabled = e.target.value.trim() === "");
 
-        // --- 4. GAME FUNCTIONS ---
         function startQuest() {
-            // Shuffle Questions
-            shuffledQuestions = [...quizData].sort(() => Math.random() - 0.5);
-            currentQIndex = 0;
-            score = 0;
-            
-            // Update UI
-            document.getElementById('player-display').textContent = playerName;
-            
-            // Switch Screens
-            startScreen.classList.add('hidden');
-            endScreen.classList.add('hidden');
-            quizScreen.classList.remove('hidden');
-            
-            loadQuestion();
+            document.getElementById('player-display').textContent = nameInput.value;
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            loadQ();
         }
 
-        function loadQuestion() {
-            if(currentQIndex >= shuffledQuestions.length) {
-                endGame();
-                return;
-            }
-
-            const qData = shuffledQuestions[currentQIndex];
-            document.getElementById('q-current').textContent = currentQIndex + 1;
-            document.getElementById('score-display').textContent = score;
-            document.getElementById('question-text').textContent = qData.q;
+        function loadQ() {
+            if (qIdx >= quizData.length) return endGame();
+            const q = quizData[qIdx];
+            document.getElementById('question-text').innerHTML = q.q.replace("_____", "<span class='text-yellow-400 border-b-2 border-yellow-400'>_____</span>");
             document.getElementById('explanation-box').classList.add('hidden');
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = "";
             
-            // Reset Timer
             resetTimer();
-
-            // Options
-            const optionsGrid = document.getElementById('options-grid');
-            optionsGrid.innerHTML = '';
-            
-            // Shuffle Options
-            const opts = [...qData.a].sort(() => Math.random() - 0.5);
-            
-            opts.forEach(opt => {
+            q.a.sort(() => Math.random() - 0.5).forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = "tile-btn w-full p-4 rounded-xl text-white font-bold text-lg hover:bg-green-700 transition";
+                btn.className = "tile-btn w-full p-4 rounded-xl text-white font-bold text-lg hover:bg-green-700";
                 btn.textContent = opt;
-                btn.onclick = () => checkAnswer(btn, opt, qData);
-                optionsGrid.appendChild(btn);
+                btn.onclick = () => check(btn, opt, q);
+                grid.appendChild(btn);
             });
         }
 
-        function checkAnswer(btn, selected, qData) {
-            clearInterval(timerInterval);
-            const buttons = document.querySelectorAll('.tile-btn');
-            buttons.forEach(b => b.disabled = true); // Lock all
-
-            if(selected === qData.c) {
-                // Correct
-                btn.classList.remove('bg-green-800');
-                btn.classList.add('bg-yellow-500', 'border-yellow-700');
+        function check(btn, ans, q) {
+            clearInterval(timer);
+            document.querySelectorAll('.tile-btn').forEach(b => b.disabled = true);
+            if (ans === q.c) {
+                btn.classList.replace('bg-green-700', 'bg-yellow-500');
                 score += 10;
-                playTone('correct');
-                setTimeout(nextQuestion, 1000);
+                document.getElementById('score-display').textContent = score;
+                setTimeout(() => { qIdx++; loadQ(); }, 1000);
             } else {
-                // Incorrect
-                btn.classList.remove('bg-green-800');
-                btn.classList.add('bg-red-600', 'border-red-800');
-                playTone('wrong');
-                showExplanation(qData.e, qData.c);
+                btn.classList.replace('bg-green-700', 'bg-red-600');
+                document.getElementById('explanation-text').innerHTML = `Correct: <b>${q.c}</b><br>${q.e}`;
+                document.getElementById('explanation-box').classList.remove('hidden');
             }
-            document.getElementById('score-display').textContent = score;
         }
 
-        function showExplanation(text, correctAns) {
-            document.getElementById('explanation-text').innerHTML = `Correct answer: <b>${correctAns}</b><br><br>${text}`;
-            document.getElementById('explanation-box').classList.remove('hidden');
-        }
-
-        function nextQuestion() {
-            currentQIndex++;
-            loadQuestion();
-        }
+        function nextQuestion() { qIdx++; loadQ(); }
 
         function resetTimer() {
-            clearInterval(timerInterval);
+            clearInterval(timer);
+            let w = 100;
             const bar = document.getElementById('timer-bar');
-            let width = 100;
             bar.style.width = '100%';
-            bar.classList.remove('bg-red-500');
-            bar.classList.add('bg-yellow-400');
-
-            timerInterval = setInterval(() => {
-                width -= (100 / 300); // 30 seconds (300 * 100ms)
-                bar.style.width = width + '%';
-                
-                if(width < 30) {
-                    bar.classList.remove('bg-yellow-400');
-                    bar.classList.add('bg-red-500');
-                }
-
-                if(width <= 0) {
-                    clearInterval(timerInterval);
-                    playTone('timeout');
-                    const qData = shuffledQuestions[currentQIndex];
-                    showExplanation("Time is up! " + qData.e, qData.c);
-                    // Disable buttons
-                    const buttons = document.querySelectorAll('.tile-btn');
-                    buttons.forEach(b => b.disabled = true);
+            timer = setInterval(() => {
+                w -= 0.5; bar.style.width = w + '%';
+                if (w <= 0) {
+                    clearInterval(timer);
+                    const q = quizData[qIdx];
+                    document.getElementById('explanation-text').innerHTML = `Time's up! Correct: <b>${q.c}</b><br>${q.e}`;
+                    document.getElementById('explanation-box').classList.remove('hidden');
                 }
             }, 100);
         }
 
         function endGame() {
-            quizScreen.classList.add('hidden');
-            endScreen.classList.remove('hidden');
-            
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
             document.getElementById('final-score').textContent = score;
-            document.getElementById('cert-name').textContent = playerName || "Student";
-            
-            let badge = "Grammar Novice";
-            if(score > 200) badge = "Forest Ranger";
-            if(score > 400) badge = "Grammar Wizard";
-            if(score > 550) badge = "Legend of the Woods";
-            document.getElementById('badge-display').textContent = badge;
+            document.getElementById('cert-name').textContent = nameInput.value;
         }
 
-        function restartGame() {
-            endScreen.classList.add('hidden');
-            startScreen.classList.remove('hidden');
-            nameInput.value = "";
-            startBtn.disabled = true;
-            startBtn.classList.add('opacity-50');
-        }
-
-        function confirmExit() {
-            if(confirm("Are you sure? Progress will be lost.")) {
-                clearInterval(timerInterval);
-                restartGame();
-            }
-        }
-
-        // --- 5. AUDIO SYNTH (Web Audio API) ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playTone(type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            const now = audioCtx.currentTime;
-            
-            if (type === 'correct') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now);
-                osc.stop(now + 0.5);
-            } else if (type === 'wrong') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.linearRampToValueAtTime(100, now + 0.3);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
-                osc.start(now);
-                osc.stop(now + 0.3);
-            } else if (type === 'timeout') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(200, now);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now);
-                osc.stop(now + 0.5);
-            }
-        }
-
-        // --- 6. PRINT FUNCTION (FAIL-SAFE WINDOW OPEN) ---
         function printWorksheet() {
-            // Pick 20 Random Questions
-            const printQ = [...quizData].sort(() => Math.random() - 0.5).slice(0, 20);
-            
-            const printWindow = window.open('', '_blank');
-            let html = `
-                <html>
-                <head>
-                    <title>Magic Forest Worksheet</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 40px; }
-                        h1 { text-align: center; border-bottom: 2px solid black; padding-bottom: 10px; }
-                        .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
-                        .question-item { margin-bottom: 15px; page-break-inside: avoid; }
-                        .blank-line { display: inline-block; width: 100px; border-bottom: 1px solid black; }
-                        .answer-key { margin-top: 50px; page-break-before: always; }
-                    </style>
-                </head>
-                <body>
-                    <h1>Magic Forest Quest - Grammar Worksheet</h1>
-                    <div class="header">
-                        <div>Name: _______________________</div>
-                        <div>Date: _______________________</div>
-                        <div>Class: ______________________</div>
-                    </div>
-                    <p><b>Instruction:</b> Circle the correct answer to fill in the blank.</p>
-                    <hr>
-            `;
-
-            // Questions Logic
-            printQ.forEach((item, index) => {
-                html += `
-                    <div class="question-item">
-                        <p><b>${index + 1}.</b> ${item.q.replace('_____', '_______')}</p>
-                        <p style="margin-left: 20px;">
-                            A) ${item.a[0]} &nbsp;&nbsp;&nbsp; B) ${item.a[1]} &nbsp;&nbsp;&nbsp; 
-                            C) ${item.a[2]} &nbsp;&nbsp;&nbsp; D) ${item.a[3]}
-                        </p>
-                    </div>
-                `;
-            });
-
-            // Answer Key Logic
-            html += `<div class="answer-key"><h1>Answer Key (Teacher's Copy)</h1>`;
-            printQ.forEach((item, index) => {
-                html += `<p><b>${index + 1}. ${item.c}</b> - <i>${item.e}</i></p>`;
-            });
-            html += `</div></body></html>`;
-
-            printWindow.document.write(html);
-            printWindow.document.close();
-            
-            // Wait for load then print
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
+            const win = window.open('', '_blank');
+            let html = `<html><head><style>body{font-family:Arial;padding:40px;}.q{margin-bottom:15px;}</style></head><body><h1 style="text-align:center">Magic Forest Worksheet</h1><p>Name: _________________</p><hr>`;
+            quizData.forEach((q,i) => html += `<div class="q"><b>${i+1}.</b> ${q.q.replace('_____', '_______')}</div>`);
+            html += `<br><h3>Answers</h3>`;
+            quizData.forEach((q,i) => html += `${i+1}. ${q.c} `);
+            html += `</body></html>`;
+            win.document.write(html);
+            win.document.close();
+            setTimeout(() => win.print(), 500);
         }
-
-        // Firefly Animation Init
-        const fireflyContainer = document.getElementById('firefly-container');
-        for(let i=0; i<20; i++) {
-            const f = document.createElement('div');
-            f.className = 'firefly';
-            f.style.left = Math.random() * 100 + '%';
-            f.style.top = Math.random() * 100 + '%';
-            f.style.animation = `firefly-move ${5 + Math.random() * 10}s infinite linear`;
-            fireflyContainer.appendChild(f);
-        }
-
     </script>
 </body>
 </html>
